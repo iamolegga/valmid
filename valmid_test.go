@@ -135,6 +135,25 @@ func TestSetValidator(t *testing.T) {
 	_ = valmid.Middleware[Input]()
 }
 
+type MultiQueryInput struct {
+	Tags []string `in:"query=tag" validate:"required,min=1,dive,required"`
+}
+
+func TestMiddleware_MultipleQueryParams(t *testing.T) {
+	mux := http.NewServeMux()
+	mux.Handle("GET /items", valmid.Middleware[MultiQueryInput]()(
+		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			input := valmid.Get[MultiQueryInput](r)
+			if len(input.Tags) != 3 || input.Tags[0] != "a" || input.Tags[1] != "b" || input.Tags[2] != "c" {
+				t.Errorf("unexpected tags: %+v", input.Tags)
+			}
+		}),
+	))
+
+	req := httptest.NewRequest("GET", "/items?tag=a&tag=b&tag=c", nil)
+	mux.ServeHTTP(httptest.NewRecorder(), req)
+}
+
 func TestGet_NoMiddleware(t *testing.T) {
 	req := httptest.NewRequest("GET", "/", nil)
 	input := valmid.Get[Input](req)
