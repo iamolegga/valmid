@@ -4,9 +4,9 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-      day: "monday"
-      time: "09:00"
-      timezone: "Etc/UTC"
+      day: "sunday"
+      time: "00:00"
+      timezone: "Asia/Nicosia"
     open-pull-requests-limit: 5
     commit-message:
       prefix: "deps"
